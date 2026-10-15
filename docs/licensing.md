@@ -20,7 +20,9 @@ Project documentation describes the design and its implementation. Preserve appl
 
 ## Third-party components
 
-Third-party components remain subject to their respective upstream licenses. Review the original license files and notices before redistributing them.
+Third-party components remain subject to their respective upstream licenses. The Vicharak SPI target HDL and its license notice are referenced in `THIRD_PARTY_NOTICES.md`; the downloaded hardware license file is located at `third_party/vicharak/LICENSE_HW.md`.
+
+Review the original license files and notices before redistributing third-party components or modified versions.
 
 ## Scope
 
