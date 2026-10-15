@@ -1,0 +1,29 @@
+; Independent edge counter for the Shrike Sentinel burst test.
+; Uses GPIO15 START as a launch marker and GPIO14 as the event input.
+; X starts at 0xFFFFFFFF and decrements once per rising edge. After the
+; input stays low for about 40 ms, the raw X value is pushed to the RX FIFO.
+; Firmware inverts that value to obtain the number of observed rising edges.
+.program sentinel_pulse_counter
+.wrap_target
+start:
+    wait 0 gpio 15
+    wait 1 gpio 15
+    mov x, ~null
+    pull block
+    mov y, osr
+
+wait_high:
+    jmp pin pulse_high
+    jmp y-- wait_high
+    mov isr, x
+    push block
+    jmp start
+
+pulse_high:
+    jmp x-- wait_low
+
+wait_low:
+    jmp pin wait_low
+    mov y, osr
+    jmp wait_high
+.wrap

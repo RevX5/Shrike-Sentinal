@@ -1,0 +1,25 @@
+# Pico SDK / CMake build output
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# Compiled artifacts
+*.elf
+*.uf2
+*.hex
+*.map
+*.dis
+*.bin.tmp
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Do not ignore bitstream/FPGA_bitstream_MCU.bin here: it is an input required
+# by CMake. Add or omit it from Git deliberately after reviewing its licensing.
