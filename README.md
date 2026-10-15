@@ -143,6 +143,14 @@ The current firmware includes these commands:
 
 **Legacy diagnostic:** `EVENT TEST` expects a continuous waveform and is not the primary test for the current finite-burst FPGA design. Use `EVENT BURST` for the main test.
 
+## AI Assistance
+
+AI tools were used as development assistants during this project to help review the system architecture, reason about firmware–FPGA interactions, troubleshoot implementation issues, identify potential inconsistencies and improve project documentation.
+
+AI suggestions were treated as assistance, not as verified engineering results. Design decisions, hardware integration, and validation remain the responsibility of the project author. Reported hardware test results are based on tests performed on the author's Shrike Lite setup; AI tools did not independently execute those hardware tests.
+
+The project source, third-party dependencies and their respective licenses should be evaluated independently of this disclosure.
+
 ## Documentation
 
 - [Architecture](docs/architecture.md)
