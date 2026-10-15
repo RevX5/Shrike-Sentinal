@@ -12,6 +12,34 @@ The RP2040 configures the FPGA from an embedded MCU-compatible bitstream at boot
 
 > **Status:** Prototype validated on the author's Shrike Lite. The repository contains the uploaded source files and build/setup documentation. The generated FPGA bitstream and Pico SDK import file are not included in this archive; follow the setup steps below before building. A successful local SDK build is not claimed here.
 
+## Practical use case: diagnose missed GPIO interrupts
+
+Imagine an embedded engineer has changed an interrupt handler in a motor-control, encoder, or sensor-processing project. The application still appears to run, but the engineer suspects that occasional input events are being missed under load. Counting only in the interrupt handler cannot distinguish a faulty pulse generator from a problem in the MCU capture path.
+
+Shrike Sentinel provides a controlled experiment without requiring an external pulse generator:
+
+1. The FPGA generates a deterministic burst of **10,000 rising edges** and keeps its own count.
+2. The RP2040 PIO state machine counts the incoming edges on GPIO14 independently of the C interrupt handler.
+3. The RP2040 GPIO interrupt handler counts the same input edges.
+4. Firmware reads the FPGA's internal count over SPI and prints all three counts and the comparisons over USB serial.
+
+### How to interpret a result
+
+| FPGA count | PIO count | IRQ count | What it suggests |
+|---:|---:|---:|---|
+| 10,000 | 10,000 | 10,000 | All three counting paths agreed for this burst. |
+| 10,000 | 10,000 | 9,998 | The FPGA generated the expected burst and PIO observed it, while the IRQ count was short. Investigate the IRQ handler, interrupt configuration, and counter bookkeeping. |
+| 10,000 | 9,998 | 9,998 | The IRQ result agrees with PIO, but PIO does not agree with the FPGA. Investigate the signal path, pin mapping, and capture setup before blaming the IRQ handler. |
+| SPI read fails | — | — | The run cannot validate the generator count until SPI readback is fixed. |
+
+These comparisons localize a discrepancy; they do not by themselves prove the exact root cause. Follow-up tests should change one variable at a time and retain the serial logs.
+
+### Example engineering workflow
+
+A firmware engineer records a baseline, makes one change to the GPIO interrupt path, rebuilds the firmware, and reruns the same burst test. If a mismatch occurs, the FPGA and PIO counts provide two references for deciding which part of the event path needs investigation. The engineer then compares repeated runs before and after the change rather than relying on a single successful burst.
+
+**Current limitation:** the repository implements a manually triggered, fixed 10,000-pulse burst. It is a focused diagnostic prototype, not a general-purpose production test framework; it does not currently automate multi-run testing or certify a maximum interrupt rate.
+
 ## Features
 
 - RP2040 firmware written in C using the Raspberry Pi Pico SDK.
