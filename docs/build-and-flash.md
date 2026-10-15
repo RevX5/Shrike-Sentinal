@@ -39,7 +39,7 @@ Review the notices before redistributing the fetched file.
 1. Open Go Configure Software Hub.
 2. Create/open the SLG47910V (Rev BB) FPGA project used for Shrike Lite.
 3. Add `fpga/main.v` and `fpga/spi_target.v` to the design sources; ensure `shrike_sentinel_events` is the top-level module.
-4. Apply the pin mappings documented in `pin-mapping.md`.
+4. Apply the pin mappings documented in `docs/pin-mapping.md`.
 5. Synthesize and check the result; the SPI module must be part of the hierarchy.
 6. Generate the MCU-compatible FPGA configuration binary.
 7. Copy the generated binary to:
