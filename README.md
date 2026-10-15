@@ -73,7 +73,7 @@ shrike-sentinel/
 │   └── fetch_dependencies.ps1
 ├── THIRD_PARTY_NOTICES.md
 ├── LICENSE-MIT
-└── LICENSE-CERN-OHL-1.2
+├──LICENSE-CERN-OHL-1.2
 └── .gitignore
 ```
 
