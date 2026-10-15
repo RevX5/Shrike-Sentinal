@@ -1,9 +1,29 @@
-# Licensing notes — review before public release
+# Licensing
 
-This prepared repository does **not** silently assign a single license to every original Shrike Sentinel file. Before publishing, decide and document the license for your own firmware, FPGA top-level design, and project documentation.
+## Original software
 
-The upstream Shrike repository states that its software is GPL-2.0 and that its hardware-design documentation / HDL / RTL is covered by CERN Open Hardware Licence v1.2. The `spi_target.v` file used by this project is fetched from Vicharak's public Shrike repository; its upstream location and license notice are recorded in `THIRD_PARTY_NOTICES.md`.
+`LICENSE-MIT` is intended to cover the original Shrike Sentinel software, including the RP2040 firmware, PIO program, and supporting build configuration, where those files are eligible for licensing under these terms.
 
-When distributing modified CERN-OHL-licensed hardware documentation, retain applicable notices and include the full license as required by its terms. The helper script fetches the license file but does not automatically choose a license for the rest of this project.
+Third-party software and files derived from upstream components retain their applicable license obligations.
 
-This file is informational, not legal advice. Do not describe the project as MIT-licensed or GPL-licensed as a whole unless you have selected that license and checked compatibility for all included components.
+## FPGA hardware design
+
+The original Shrike Sentinel FPGA top-level design in `fpga/main.v` is intended to be licensed under CERN-OHL-1.2, subject to the applicable license terms.
+
+The complete license text is provided in `LICENSE-CERN-OHL-1.2`.
+
+The design instantiates Vicharak's `spi_target` module. That third-party source retains its upstream license and notices. See `THIRD_PARTY_NOTICES.md`.
+
+## Documentation
+
+Project documentation describes the design and its implementation. Preserve applicable third-party notices and comply with the relevant license terms when redistributing modified hardware documentation.
+
+## Third-party components
+
+Third-party components remain subject to their respective upstream licenses. Review the original license files and notices before redistributing them.
+
+## Scope
+
+The presence of `LICENSE-MIT` does not mean that every file in this repository is MIT-licensed. Consult the applicable license and notices for each component.
+
+This document is informational and is not legal advice.
