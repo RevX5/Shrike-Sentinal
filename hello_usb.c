@@ -94,17 +94,15 @@ static uint32_t burst_last_count = 0;
 static uint64_t burst_start_ms = 0;
 static uint64_t burst_last_change_ms = 0;
 
-/* SPI readback helpers are defined after FPGA configuration code. */
 static bool fpga_read_pulse_count(uint32_t *count);
 static bool fpga_pio_capture_init(void);
 
-/* Return uptime in milliseconds. */
 static uint64_t get_uptime_ms(void)
 {
     return to_us_since_boot(get_absolute_time()) / 1000ULL;
 }
 
-/* Add an event to the circular RAM log. */
+// Add an event to the circular RAM log
 static void record_event(event_code_t code, int32_t value)
 {
     event_t *event = &event_log[log_head];
@@ -204,7 +202,7 @@ static void print_event_log(void)
 
 static void process_command(char *line)
 {
-    /* Remove leading whitespace. */
+    // Remove leading whitespace
     size_t start = 0;
 
     while (line[start] != '\0' &&
@@ -216,7 +214,7 @@ static void process_command(char *line)
         memmove(line, line + start, strlen(line + start) + 1);
     }
 
-    /* Remove trailing whitespace. */
+    // Remove trailing whitespace
     size_t length = strlen(line);
 
     while (length > 0 &&
@@ -224,7 +222,7 @@ static void process_command(char *line)
         line[--length] = '\0';
     }
 
-    /* Commands are case-insensitive. */
+    // Commands are case-insensitive. 
     for (size_t i = 0; line[i] != '\0'; i++) {
         line[i] = (char)toupper((unsigned char)line[i]);
     }
@@ -281,8 +279,7 @@ static void process_command(char *line)
         printf("\nWatchdog test starting.\n");
        printf("The MCU should reset in about 3 seconds.\n");
        stdio_flush();
-
-    /* Deliberately stop feeding the watchdog. */
+        
     while (true) {
         tight_loop_contents();
     }
@@ -335,7 +332,6 @@ static void process_command(char *line)
 
         printf("\nStarting 10,000-pulse FPGA burst test...\n");
         if (pio_capture_ready) {
-            /* Remove stale capture data and arm a 40 ms quiet-time window. */
             pio_sm_clear_fifos(capture_pio, capture_sm);
             pio_sm_put_blocking(capture_pio, capture_sm,
                                 PIO_CAPTURE_IDLE_LOOPS);
@@ -361,7 +357,6 @@ static void __no_inline_not_in_flash_func(fpga_event_irq_handler)(void)
     uint32_t events = gpio_get_irq_event_mask(FPGA_EVENT_GPIO);
 
     if (events != 0u) {
-        /* Acknowledge the pending event as early as possible. */
         gpio_acknowledge_irq(FPGA_EVENT_GPIO, events);
 
         if (events & GPIO_IRQ_EDGE_RISE) {
@@ -462,7 +457,6 @@ static void update_event_burst_test(void)
                        !pio_sm_is_rx_fifo_empty(capture_pio, capture_sm);
     if (pio_read_ok) {
         pio_raw = pio_sm_get(capture_pio, capture_sm);
-        /* PIO X starts at 0xFFFFFFFF and decrements once per rising edge. */
         pio_observed = ~pio_raw;
     }
 
@@ -569,7 +563,6 @@ static void poll_console(void)
 
     previous_was_cr = false;
 
-    /* Handle Backspace and Delete. */
     if (ch == '\b' || ch == 127) {
         if (command_length > 0 && !command_overflow) {
             command_length--;
@@ -579,7 +572,6 @@ static void poll_console(void)
         return;
     }
 
-    /* Accept printable ASCII. */
     if (ch >= 32 && ch <= 126) {
         if (command_length < COMMAND_BUFFER_SIZE - 1 &&
             !command_overflow) {
@@ -598,14 +590,12 @@ static void fpga_event_input_init(void)
     gpio_set_dir(FPGA_EVENT_GPIO, GPIO_IN);
     gpio_disable_pulls(FPGA_EVENT_GPIO);
 
-    /* Disable edge interrupts while configuring the handler. */
     gpio_set_irq_enabled(
         FPGA_EVENT_GPIO,
         GPIO_IRQ_EDGE_RISE,
         false
     );
 
-    /* Clear any pending events left over from initialization. */
     gpio_acknowledge_irq(
         FPGA_EVENT_GPIO,
         GPIO_IRQ_EDGE_RISE |
@@ -614,7 +604,6 @@ static void fpga_event_input_init(void)
         GPIO_IRQ_LEVEL_LOW
     );
 
-    /* Install a direct handler for the GPIO interrupt bank. */
     irq_set_enabled(IO_IRQ_BANK0, false);
     irq_set_exclusive_handler(
         IO_IRQ_BANK0,
@@ -651,7 +640,6 @@ static bool fpga_configure(void)
     gpio_init(PIN_EN);
     gpio_set_dir(PIN_EN, GPIO_OUT);
 
-    /* Begin the FPGA power-up sequence. */
     gpio_put(PIN_PWR, 0);
     gpio_put(PIN_EN, 0);
     watchdog_update();
@@ -666,8 +654,7 @@ static bool fpga_configure(void)
 
     gpio_put(PIN_CFG_SS, 1);
     sleep_ms(2);
-
-    /* Send the complete FPGA bitstream in one SPI frame. */
+    
     gpio_put(PIN_CFG_SS, 0);
     watchdog_update();
 
@@ -683,7 +670,6 @@ static bool fpga_configure(void)
 
     spi_deinit(CFG_SPI);
 
-    /* Release the SPI pins from their peripheral function. */
     for (int pin = PIN_CFG_MISO; pin <= PIN_CFG_MOSI; pin++) {
         gpio_set_function(pin, GPIO_FUNC_SIO);
         gpio_set_dir(pin, GPIO_IN);
@@ -692,10 +678,6 @@ static bool fpga_configure(void)
     return written == (int)fpga_bitstream_len;
 }
 
-/*
- * Re-use SPI0 after the initial FPGA bitstream transfer has completed.
- * GPIO1 is manual chip-select (SIO); GPIO0/2/3 remain MISO/SCK/MOSI SPI pins.
- */
 static bool fpga_spi_target_init(void)
 {
     spi_init(CFG_SPI, FPGA_SPI_BAUD_HZ);
@@ -713,7 +695,6 @@ static bool fpga_spi_target_init(void)
     return true;
 }
 
-/* Perform one 8-bit SPI transaction with a separate CS frame per byte. */
 static bool fpga_spi_transfer_byte(uint8_t tx, uint8_t *rx)
 {
     if (!fpga_spi_ready || rx == NULL) {
@@ -729,12 +710,6 @@ static bool fpga_spi_transfer_byte(uint8_t tx, uint8_t *rx)
     return transferred == 1;
 }
 
-/*
- * FPGA read protocol: 0xA0 snapshots pulses_sent. The target shifts the
- * currently selected byte during each transaction, so A1/A2/A3 select the
- * next byte while returning the previous byte. The final dummy transfer
- * clocks out byte 3. Bytes are returned least-significant first.
- */
 static bool fpga_read_pulse_count(uint32_t *count)
 {
     if (!fpga_spi_ready || count == NULL) {
@@ -772,7 +747,6 @@ static bool fpga_pio_capture_init(void)
     capture_offset = pio_add_program(capture_pio,
                                      &sentinel_pulse_counter_program);
 
-    /* Keep the existing SIO edge IRQ and add an independent PIO observer. */
     pio_gpio_init(capture_pio, FPGA_EVENT_GPIO);
 
     pio_sm_config config =
@@ -795,7 +769,6 @@ static void fpga_start_output_init(void)
 
 int main(void)
 {
-    /* Check the previous reset cause before enabling the watchdog. */
     bool watchdog_reset = watchdog_caused_reboot();
 
     watchdog_enable(3000, true);
