@@ -1,3 +1,8 @@
+// Shrike Sentinel FPGA top-level design
+// Copyright (c) 2026 RevX5
+// License: CERN-OHL-1.2
+// Source: https://github.com/RevX5/Shrike-Sentinal
+
 (* top *) module shrike_sentinel_events(
     (* iopad_external_pin, clkbuf_inhibit *) input clk,
     (* iopad_external_pin *) input START,
