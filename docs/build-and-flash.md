@@ -5,11 +5,19 @@ This guide is based on the current Windows project and its CMake configuration.
 ## Prerequisites
 
 - Vicharak Shrike Lite board.
-- Go Configure Software Hub set up for the on-board FPGA.
+- Go Configure Software Hub configured for the on-board FPGA.
 - VS Code with the Raspberry Pi Pico extension.
-- Pico SDK 2.3.1 and the toolchain version configured by the supplied CMake template.
-- USB data cable and a serial terminal (for example PuTTY).
-- The generated MCU-compatible FPGA bitstream file.
+- Raspberry Pi Pico SDK **2.3.1**, with its required compiler, CMake, and build tools installed.
+- USB data cable and a serial terminal (for example, PuTTY).
+- Generated MCU-compatible FPGA bitstream.
+
+### Pico SDK setup
+
+1. Install the Raspberry Pi Pico extension in VS Code and follow its setup instructions to install or locate Pico SDK 2.3.1 and the required toolchain.
+2. Ensure the SDK path is configured as required by the extension and the project's `pico_sdk_import.cmake`.
+3. Confirm that the SDK and toolchain are available before configuring the project.
+
+The repository's `scripts/fetch_dependencies.ps1` downloads the Pico SDK import helper; **it does not download the complete Pico SDK or install the toolchain**.
 
 ## 1. Fetch required source helpers
 
