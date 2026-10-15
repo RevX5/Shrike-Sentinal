@@ -138,11 +138,10 @@ The current firmware includes these commands:
 - `WATCHDOG STATUS`
 - `WATCHDOG TEST` — intentionally stops servicing the watchdog; use only when a reset is acceptable.
 - `EVENT COUNT`
-- `EVENT TEST`
-- `EVENT BURST`
+- `EVENT BURST` — runs the current finite-burst test.
 - `FPGA COUNT`
 
-`EVENT TEST` is legacy diagnostic code expecting a continuous waveform; the current FPGA design is configured for triggered finite bursts. Use `EVENT BURST` for the current main test.
+**Legacy diagnostic:** `EVENT TEST` expects a continuous waveform and is not the primary test for the current finite-burst FPGA design. Use `EVENT BURST` for the main test.
 
 ## Documentation
 
