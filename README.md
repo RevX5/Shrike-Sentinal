@@ -2,7 +2,7 @@
 
 **Automated embedded firmware stress testing with the Vicharak Shrike Lite (RP2040 + FPGA).**
 
-Shrike Sentinel exercises the FPGA-to-MCU event path with a repeatable 10,000-pulse burst. It compares three independent measurements:
+Shrike Sentinel exercises the FPGA to MCU event path with a repeatable 10,000-pulse burst. It compares three independent measurements:
 
 1. **FPGA internal counter** - the number of generated rising edges.
 2. **RP2040 PIO counter** - an independent hardware-assisted count of input edges on GPIO14.
